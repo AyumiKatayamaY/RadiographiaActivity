@@ -1,0 +1,48 @@
+2025-10-07 15:46:23.499 27066-27066 nativeloader            jp.katayama.radiographiaactivity     D  Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+---------------------------- PROCESS STARTED (27066) for package jp.katayama.radiographiaactivity ----------------------------
+2025-10-07 15:46:23.531 27066-27066 nativeloader            jp.katayama.radiographiaactivity     D  Load /data/user/0/jp.katayama.radiographiaactivity/code_cache/startup_agents/65318d08-agent.so using system ns (caller=<unknown>): ok
+2025-10-07 15:46:23.543 27066-27066 graphiaactivity         jp.katayama.radiographiaactivity     W  hiddenapi: DexFile /data/data/jp.katayama.radiographiaactivity/code_cache/.studio/instruments-873176f2.jar is in boot class path but is not in a known location
+2025-10-07 15:46:23.640 27066-27066 graphiaactivity         jp.katayama.radiographiaactivity     W  Redefining intrinsic method java.lang.Thread java.lang.Thread.currentThread(). This may cause the unexpected use of the original definition of java.lang.Thread java.lang.Thread.currentThread()in methods that have already been compiled.
+2025-10-07 15:46:23.640 27066-27066 graphiaactivity         jp.katayama.radiographiaactivity     W  Redefining intrinsic method boolean java.lang.Thread.interrupted(). This may cause the unexpected use of the original definition of boolean java.lang.Thread.interrupted()in methods that have already been compiled.
+2025-10-07 15:46:23.686 27066-27066 nativeloader            jp.katayama.radiographiaactivity     D  Configuring clns-9 for other apk /system_ext/framework/com.google.android.camerax.extensions.jar. target_sdk_version=36, uses_libraries=ALL, library_path=/data/app/~~Kf1SDH8z6PnCmh-uzqPO7g==/jp.katayama.radiographiaactivity-aR9-Eht0_j4qvWKUbuI-mw==/lib/arm64:/data/app/~~Kf1SDH8z6PnCmh-uzqPO7g==/jp.katayama.radiographiaactivity-aR9-Eht0_j4qvWKUbuI-mw==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/jp.katayama.radiographiaactivity
+2025-10-07 15:46:23.686 27066-27066 ApplicationLoaders      jp.katayama.radiographiaactivity     D  Returning zygote-cached class loader: /system_ext/framework/androidx.window.extensions.jar
+2025-10-07 15:46:23.686 27066-27066 ApplicationLoaders      jp.katayama.radiographiaactivity     D  Returning zygote-cached class loader: /system_ext/framework/androidx.window.sidecar.jar
+2025-10-07 15:46:23.823 27066-27066 nativeloader            jp.katayama.radiographiaactivity     D  Configuring clns-10 for other apk /data/app/~~Kf1SDH8z6PnCmh-uzqPO7g==/jp.katayama.radiographiaactivity-aR9-Eht0_j4qvWKUbuI-mw==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~Kf1SDH8z6PnCmh-uzqPO7g==/jp.katayama.radiographiaactivity-aR9-Eht0_j4qvWKUbuI-mw==/lib/arm64:/data/app/~~Kf1SDH8z6PnCmh-uzqPO7g==/jp.katayama.radiographiaactivity-aR9-Eht0_j4qvWKUbuI-mw==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/jp.katayama.radiographiaactivity
+2025-10-07 15:46:23.835 27066-27066 GraphicsEnvironment     jp.katayama.radiographiaactivity     V  Currently set values for:
+2025-10-07 15:46:23.835 27066-27066 GraphicsEnvironment     jp.katayama.radiographiaactivity     V    angle_gl_driver_selection_pkgs=[com.android.angle, com.google.android.apps.tachyon]
+2025-10-07 15:46:23.835 27066-27066 GraphicsEnvironment     jp.katayama.radiographiaactivity     V    angle_gl_driver_selection_values=[angle, native]
+2025-10-07 15:46:23.835 27066-27066 GraphicsEnvironment     jp.katayama.radiographiaactivity     V  jp.katayama.radiographiaactivity is not listed in per-application setting
+2025-10-07 15:46:23.835 27066-27066 GraphicsEnvironment     jp.katayama.radiographiaactivity     V  ANGLE allowlist from config: 
+2025-10-07 15:46:23.835 27066-27066 GraphicsEnvironment     jp.katayama.radiographiaactivity     V  jp.katayama.radiographiaactivity is not listed in ANGLE allowlist or settings, returning default
+2025-10-07 15:46:23.836 27066-27066 GraphicsEnvironment     jp.katayama.radiographiaactivity     V  Neither updatable production driver nor prerelease driver is supported.
+2025-10-07 15:46:23.858 27066-27080 DisplayManager          jp.katayama.radiographiaactivity     I  Choreographer implicitly registered for the refresh rate.
+2025-10-07 15:46:23.860 27066-27080 vulkan                  jp.katayama.radiographiaactivity     D  searching for layers in '/data/app/~~Kf1SDH8z6PnCmh-uzqPO7g==/jp.katayama.radiographiaactivity-aR9-Eht0_j4qvWKUbuI-mw==/lib/arm64'
+2025-10-07 15:46:23.860 27066-27080 vulkan                  jp.katayama.radiographiaactivity     D  searching for layers in '/data/app/~~Kf1SDH8z6PnCmh-uzqPO7g==/jp.katayama.radiographiaactivity-aR9-Eht0_j4qvWKUbuI-mw==/base.apk!/lib/arm64-v8a'
+2025-10-07 15:46:23.875 27066-27066 AppCompatDelegate       jp.katayama.radiographiaactivity     D  Checking for metadata for AppLocalesMetadataHolderService : Service not found
+2025-10-07 15:46:23.878 27066-27066 ashmem                  jp.katayama.radiographiaactivity     E  Pinning is deprecated since Android Q. Please use trim or other methods.
+2025-10-07 15:46:23.947 27066-27066 FirstFragment           jp.katayama.radiographiaactivity     I  Camera PERMISSION_GRANTED
+2025-10-07 15:46:23.949 27066-27066 FirstFragment           jp.katayama.radiographiaactivity     I  startForegroundService
+2025-10-07 15:46:23.950 27066-27066 FirstFragment           jp.katayama.radiographiaactivity     I  bindService
+2025-10-07 15:46:23.958 27066-27066 CompatChangeReporter    jp.katayama.radiographiaactivity     D  Compat change id reported: 377864165; UID 10509; state: ENABLED
+2025-10-07 15:46:23.958 27066-27066 DesktopExperienceFlags  jp.katayama.radiographiaactivity     D  Toggle override initialized to: false
+2025-10-07 15:46:23.958 27066-27066 DesktopModeFlags        jp.katayama.radiographiaactivity     D  Toggle override initialized to: OVERRIDE_UNSET
+2025-10-07 15:46:23.962 27066-27066 graphiaactivity         jp.katayama.radiographiaactivity     I  hiddenapi: Accessing hidden method Landroid/view/ViewGroup;->makeOptionalFitsSystemWindows()V (runtime_flags=0, domain=platform, api=unsupported) from Landroidx/appcompat/widget/ViewUtils; (domain=app) using reflection: allowed
+2025-10-07 15:46:23.998 27066-27066 WindowOnBackDispatcher  jp.katayama.radiographiaactivity     D  setTopOnBackInvokedCallback (unwrapped): android.app.Activity$$ExternalSyntheticLambda0@c5e1e6c
+2025-10-07 15:46:24.005 27066-27066 HWUI                    jp.katayama.radiographiaactivity     I  Using FreeType backend (prop=Auto)
+2025-10-07 15:46:24.103 27066-27066 CameraService           jp.katayama.radiographiaactivity     D  onStartCommand
+2025-10-07 15:46:24.104 27066-27066 CameraService           jp.katayama.radiographiaactivity     D  createNotificationChannel 36
+2025-10-07 15:46:24.104 27066-27066 CameraService           jp.katayama.radiographiaactivity     D  createNotificationChannel Ver OK
+2025-10-07 15:46:24.105 27066-27066 CameraService           jp.katayama.radiographiaactivity     D  Notification
+2025-10-07 15:46:24.110 27066-27066 CameraService           jp.katayama.radiographiaactivity     D  Service started
+2025-10-07 15:46:24.122 27066-27101 CameraManagerGlobal     jp.katayama.radiographiaactivity     I  Connecting to camera service
+2025-10-07 15:46:24.122 27066-27066 CameraService           jp.katayama.radiographiaactivity     D  initializeCamera set preview
+2025-10-07 15:46:24.122 27066-27066 CameraService           jp.katayama.radiographiaactivity     D  onBind
+2025-10-07 15:46:24.139 27066-27101 CameraRepository        jp.katayama.radiographiaactivity     D  Added camera: 0
+2025-10-07 15:46:24.140 27066-27066 FirstFragment           jp.katayama.radiographiaactivity     I  onServiceConnected
+2025-10-07 15:46:24.140 27066-27066 CameraService           jp.katayama.radiographiaactivity     D  setSurfaceProvider
+2025-10-07 15:46:24.143 27066-27066 CameraService           jp.katayama.radiographiaactivity     D  bindCameraToLifecycle: Preview:androidx.camera.core.Preview-7dc4f67b-5a41-4e8e-92af-6ff7b8b1fd28
+2025-10-07 15:46:24.149 27066-27101 Camera2CameraInfo       jp.katayama.radiographiaactivity     I  Device Level: INFO_SUPPORTED_HARDWARE_LEVEL_FULL
+2025-10-07 15:46:24.151 27066-27101 CameraRepository        jp.katayama.radiographiaactivity     D  Added camera: 1
+2025-10-07 15:46:24.152 27066-27101 Camera2CameraInfo       jp.katayama.radiographiaactivity     I  Device Level: INFO_SUPPORTED_HARDWARE_LEVEL_FULL
+2025-10-07 15:46:24.152 27066-27101 CameraValidator         jp.katayama.radiographiaactivity     D  Verifying camera lens facing on akita, lensFacingInteger: null
+2025-10-07 15:46:24.429 27066-27070 graphiaactivity         jp.katayama.radiographiaactivity     I  Compiler allocated 4970KB to compile void android.view.ViewRootImpl.performTraversals()
