@@ -3,39 +3,39 @@
 [![Language](https://img.shields.io/badge/language-Kotlin-orange.svg)](https://kotlinlang.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-`RadiographiaActivity` �́AAndroid�f�o�C�X�̃J�������g�p���ă��A���^�C���Ńt���[�����擾���A�P�x��͂��s�����߂̃T���v���A�v���P�[�V�����ł��B
+`RadiographiaActivity` は、Androidデバイスのカメラを使用してリアルタイムでフレームを取得し、輝度解析を行うためのサンプルアプリケーションです。
 
-���̃v���W�F�N�g�́A�J��������̉f������͂��ċP�x���z�����̋P�_�i���P�x�s�N�Z���j�����o����@�\�̎�����������܂��B
+このプロジェクトは、カメラからの映像を解析して輝度分布や特定の輝点（高輝度ピクセル）を検出する機能の実装例を示します。
 
-## ��ȋ@�\
+## 主な機能
 
-*   **���A���^�C���P�x���**: �J�����v���r���[����t���[�����擾���A���ϋP�x�A�ő�/�ŏ��P�x�Ȃǂ��v�Z���܂��B
-*   **�P�x���z�̃J�E���g**: ����̋P�x�͈͂ɑ�����s�N�Z�������J�E���g���A���z��c�����܂��B
-*   **���P�x�s�N�Z���̌��o**: �ݒ肳�ꂽ�������l�𒴂���P�x�����s�N�Z���̍��W�ƋP�x�l�����X�g�Ƃ��ĕێ����܂��B
-*   **�摜�ۑ�**: ��͌��ʂɊ�Â��āA����̃t���[�����摜�t�@�C���Ƃ��ăf�o�C�X�ɕۑ�����@�\���܂܂�Ă��܂��B
+*   **リアルタイム輝度解析**: カメラプレビューからフレームを取得し、平均輝度、最大/最小輝度などを計算します。
+*   **輝度分布のカウント**: 特定の輝度範囲に属するピクセル数をカウントし、分布を把握します。
+*   **高輝度ピクセルの検出**: 設定されたしきい値を超える輝度を持つピクセルの座標と輝度値をリストとして保持します。
+*   **画像保存**: 解析結果に基づいて、特定のフレームを画像ファイルとしてデバイスに保存する機能が含まれています。
 
-## �f�[�^�\��
+## データ構造
 
-���̃A�v���ł́A��͌��ʂ��Ǘ����邽�߂Ɉȉ��̃f�[�^�N���X���g�p���Ă��܂��B
+このアプリでは、解析結果を管理するために以下のデータクラスを使用しています。
 
-*   `AnalysisResult`: ��̃t���[���ɑ΂���ԗ��I�ȉ�͌��ʂ�ێ����܂��B
-    *   `averageLuminosity`: ���ϋP�x
-    *   `maxLuminosity`: �ő�P�x
-    *   `brightPixels`: 臒l�𒴂����P�_�̃��X�g
-    *   ���̑��A�P�x���z�J�E���g�Ȃ�
-*   `BrightPixel`: ���P�x�s�N�Z���̏���ێ����܂��B
-    *   `x`, `y`: �s�N�Z���̍��W
-    *   `luminosity`: �s�N�Z���̋P�x�l
+*   `AnalysisResult`: 一つのフレームに対する網羅的な解析結果を保持します。
+    *   `averageLuminosity`: 平均輝度
+    *   `maxLuminosity`: 最大輝度
+    *   `brightPixels`: 閾値を超えた輝点のリスト
+    *   その他、輝度分布カウントなど
+*   `BrightPixel`: 高輝度ピクセルの情報を保持します。
+    *   `x`, `y`: ピクセルの座標
+    *   `luminosity`: ピクセルの輝度値
 
-## �Z�b�g�A�b�v�ƃr���h���@
+## セットアップとビルド方法
 
-### �K�v�Ȃ���
+### 必要なもの
 
-*   Android Studio Giraffe | 2022.3.1 �ȍ~
-*   Kotlin �v���O�C��
+*   Android Studio Giraffe | 2022.3.1 以降
+*   Kotlin プラグイン
 *   Android SDK
 
-### �r���h�菇
+### ビルド手順
 
-1.  ���̃��|�W�g�����N���[���܂��̓_�E�����[�h���܂��B
+1.  このリポジトリをクローンまたはダウンロードします。
     
