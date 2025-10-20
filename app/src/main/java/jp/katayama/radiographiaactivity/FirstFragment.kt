@@ -205,6 +205,11 @@ class FirstFragment : Fragment() {
 
         //観測を開始する
         cameraService?.startMonitoring()
+
+        //ログを記録する
+        val dateStr = SimpleDateFormat("HH:mm:ss", Locale.JAPAN).format(Date(System.currentTimeMillis()))
+        var logMessage = "$dateStr - 観測開始"
+        updateUI("", logMessage)
     }
 
     //観測終了
@@ -215,6 +220,11 @@ class FirstFragment : Fragment() {
 
         //観測を停止する
         cameraService?.stopMonitoring()
+
+        //ログを記録する
+        val dateStr = SimpleDateFormat("HH:mm:ss", Locale.JAPAN).format(Date(System.currentTimeMillis()))
+        var logMessage = "$dateStr - 観測終了"
+        updateUI("", logMessage)
     }
 
     /*****************************************************
