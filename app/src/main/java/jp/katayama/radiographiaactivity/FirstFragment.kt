@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import jp.katayama.radiographiaactivity.databinding.FragmentFirstBinding
 import android.Manifest
-import android.app.AlertDialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.ComponentName
@@ -21,8 +20,6 @@ import android.content.ServiceConnection
 import android.icu.text.SimpleDateFormat
 import android.os.Build
 import android.os.IBinder
-import android.provider.Settings
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -33,7 +30,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
-import android.widget.Button
 import java.util.concurrent.Executors
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.Date
@@ -108,7 +104,7 @@ class FirstFragment : Fragment() {
         logFile = getLogFile(requireContext(), "detection_log.txt")
 
         //ログファイルをリストア
-        restoreLogs();
+        restoreLogs()
 
         //観測開始ボタンの準備
         binding.buttonStartMonitoring.setOnClickListener {
@@ -208,7 +204,7 @@ class FirstFragment : Fragment() {
 
         //ログを記録する
         val dateStr = SimpleDateFormat("HH:mm:ss", Locale.JAPAN).format(Date(System.currentTimeMillis()))
-        var logMessage = "$dateStr - 観測開始"
+        val logMessage = "$dateStr - 観測開始"
         updateUI("", logMessage)
     }
 
@@ -223,7 +219,7 @@ class FirstFragment : Fragment() {
 
         //ログを記録する
         val dateStr = SimpleDateFormat("HH:mm:ss", Locale.JAPAN).format(Date(System.currentTimeMillis()))
-        var logMessage = "$dateStr - 観測終了"
+        val logMessage = "$dateStr - 観測終了"
         updateUI("", logMessage)
     }
 
@@ -384,7 +380,7 @@ class FirstFragment : Fragment() {
         }
 
         if (logMessage.isNotEmpty()) {
-            updateLog(logMessage);
+            updateLog(logMessage)
         }
     }
 
