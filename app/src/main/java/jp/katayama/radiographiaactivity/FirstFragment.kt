@@ -34,6 +34,8 @@ import java.util.concurrent.Executors
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.Date
 import java.util.Locale
+import android.os.Handler
+import android.os.Looper
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -42,6 +44,9 @@ class FirstFragment : Fragment() {
     /*****************************************************
      * メンバ変数
      ****************************************************/
+    // UIスレッドで遅延処理を行うためのHandler
+    private val timerHandler = Handler(Looper.getMainLooper())
+
     //観測中の状態
     private var isMonitoring: Boolean = false
     //カメラ起動完了
@@ -108,7 +113,12 @@ class FirstFragment : Fragment() {
 
         //観測開始ボタンの準備
         binding.buttonStartMonitoring.setOnClickListener {
-            startMonitoring()
+            // EditTextから値を取得
+            val delaySeconds = binding.editTextDelay.text.toString().toLongOrNull() ?: 0
+            val durationSeconds = binding.editTextDuration.text.toString().toLongOrNull()
+
+            // タイマーを使って観測を開始
+            startMonitoringWithTimer(delaySeconds, durationSeconds)
         }
 
         //観測終了ボタンの準備
@@ -164,6 +174,9 @@ class FirstFragment : Fragment() {
     override fun onDestroyView() {
         Log.d("FirstFragment", "onDestroyView")
 
+        //Handlerのコールバックを全て削除
+        timerHandler.removeCallbacksAndMessages(null)
+
         // ログ書き込み専用のシングルトレッドディスパッチャをクローズ
         //ファイルアクセス中に実行して場合ファイルの健全性は担保されないが、そこまでは面倒みない。
         logDispatcher.close()
@@ -175,6 +188,35 @@ class FirstFragment : Fragment() {
     /*****************************************************
      * 観測処理関連
      ****************************************************/
+    //観測開始（時間指定）
+    private fun startMonitoringWithTimer(delaySeconds: Long, durationSeconds: Long?) {
+        // 既存の遅延処理があればキャンセル
+        timerHandler.removeCallbacksAndMessages(null)
+
+        // ログを追加
+        val delayMillis = delaySeconds * 1000
+        if (0 < delaySeconds) {
+            val dateStr = SimpleDateFormat("HH:mm:ss", Locale.JAPAN).format(Date(System.currentTimeMillis()))
+            updateUI("", "$dateStr - タイマー設定: ${delaySeconds}秒後に観測を開始します。")
+        }
+
+        // N秒後に観測を開始する処理を予約
+        timerHandler.postDelayed({
+            //観測開始
+            startMonitoring()
+
+            // もし観測「期間」が指定されていたら、その時間後に停止処理を予約する
+            if (durationSeconds != null && durationSeconds > 0) {
+                val dateStr = SimpleDateFormat("HH:mm:ss", Locale.JAPAN).format(Date(System.currentTimeMillis()))
+                updateUI("", "$dateStr - タイマー設定: ${durationSeconds}秒間観測します。")
+                val durationMillis = durationSeconds * 1000
+                timerHandler.postDelayed({
+                    stopMonitoring()
+                }, durationMillis)
+            }
+        }, delayMillis)
+    }
+
     //観測開始
     private fun startMonitoring() {
         Log.d("FirstFragment", "startMonitoring")
@@ -211,6 +253,14 @@ class FirstFragment : Fragment() {
     //観測終了
     private fun stopMonitoring() {
         Log.d("FirstFragment", "stopMonitoring")
+        //既に観測停止中のときは何もしない。
+        if (isMonitoring == false) {
+            return
+        }
+
+        //ユーザーが手動で停止した場合、予約されていた停止処理もキャンセルする
+        timerHandler.removeCallbacksAndMessages(null)
+
         //観測停止中
         isMonitoring = false
 

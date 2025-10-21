@@ -70,6 +70,59 @@
                         android:orientation="vertical"
                         app:layout_constraintEnd_toEndOf="@id/textview_first"
                         app:layout_constraintBottom_toBottomOf="@id/textview_first">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="タイマー設定"
+                            android:layout_marginTop="16dp" />
+
+                        <!-- 1行目: 開始までの時間 -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="34dp"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <EditText
+                                android:id="@+id/editText_delay"
+                                android:layout_width="80dp"
+                                android:layout_height="wrap_content"
+                                android:inputType="number"
+                                android:gravity="end"
+                                android:background="@android:drawable/edit_text"
+                                android:paddingTop="0dp"
+                                android:paddingBottom="0dp"  />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="秒後に開始"
+                                android:layout_marginStart="4dp" />
+                        </LinearLayout>
+
+                        <!-- 2行目: 観測時間 -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="34dp"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <EditText
+                                android:id="@+id/editText_duration"
+                                android:layout_width="80dp"
+                                android:layout_height="wrap_content"
+                                android:inputType="number"
+                                android:gravity="end"
+                                android:background="@android:drawable/edit_text"
+                                android:paddingTop="0dp"
+                                android:paddingBottom="0dp"  />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="秒間観測"
+                                android:layout_marginStart="4dp" />
+                        </LinearLayout>
                         <Button
                             android:id="@+id/button_start_monitoring"
                             android:layout_width="wrap_content"
