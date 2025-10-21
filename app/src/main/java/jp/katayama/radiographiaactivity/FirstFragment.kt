@@ -221,17 +221,17 @@ class FirstFragment : Fragment() {
     private fun startMonitoring() {
         Log.d("FirstFragment", "startMonitoring")
         //既に観測中のときは何もしない。
-        if (isMonitoring == true) {
+        if (isMonitoring) {
             return
         }
 
         //通知が許可されていないときは解析を開始しない。
-        if (notificationPermissionGranted() == false) {
+        if (!notificationPermissionGranted()) {
             return
         }
 
         //カメラが許可されていないときは解析を開始しない。
-        if (cameraPermissionGranted() == false) {
+        if (!cameraPermissionGranted()) {
             return
         }
 
@@ -254,7 +254,7 @@ class FirstFragment : Fragment() {
     private fun stopMonitoring() {
         Log.d("FirstFragment", "stopMonitoring")
         //既に観測停止中のときは何もしない。
-        if (isMonitoring == false) {
+        if (!isMonitoring) {
             return
         }
 
