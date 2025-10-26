@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
@@ -13,13 +14,31 @@ import java.nio.ByteBuffer
 import android.graphics.ImageFormat
 import android.graphics.Rect
 import android.graphics.YuvImage
+import androidx.core.graphics.drawable.toBitmap
+import java.io.ByteArrayOutputStream
 
 class MyImageAnalyzer(private val context: Context, private val listener: (AnalysisResult) -> Unit) : ImageAnalysis.Analyzer {
     /*****************************************************
      * メンバ変数
      ****************************************************/
-    //輝点の累積
-    private var cumulativeImageProxy: ImageProxy? = null
+    /**
+     * YUV画像データを保持するためのシンプルなデータクラス
+     */
+    private data class YuvFrame(
+        val yBuffer: ByteBuffer,
+        val uBuffer: ByteBuffer,
+        val vBuffer: ByteBuffer,
+        val width: Int,
+        val height: Int,
+        val yRowStride: Int,
+        val uRowStride: Int,
+        val vRowStride: Int,
+        val uPixelStride: Int,
+        val vPixelStride: Int
+    )
+
+    // 輝点の累積
+    private var cumulativeFrame: YuvFrame? = null
 
     //観測中の状態
     private var isMonitoring: Boolean = false
@@ -41,22 +60,14 @@ class MyImageAnalyzer(private val context: Context, private val listener: (Analy
     //観測を開始する
     fun startMonitoring() {
         this.isMonitoring = true
-
-        // 保持している古いImageProxyがあれば解放し、クリアする
-        cumulativeImageProxy?.close()
-        cumulativeImageProxy = null
+        cumulativeFrame = null
     }
 
     //観測を停止する
     fun stopMonitoring() {
         // 累積用のImageProxyが保持されていれば、JPEGファイルとして保存する
-        cumulativeImageProxy?.let { imageToSave ->
-            // 累積画像を保存する。
-            saveImage(imageToSave, "Cumulative_")
-
-            // 保存が終わったら必ず解放する
-            imageToSave.close()
-            cumulativeImageProxy = null
+        cumulativeFrame?.let { frame ->
+            saveYuvFrameAsJpeg(frame)
         }
 
         this.isMonitoring = false
@@ -102,17 +113,14 @@ class MyImageAnalyzer(private val context: Context, private val listener: (Analy
             brightPixelsSaveImage(imageProxy, result)
 
             if (isMonitoring && result.brightPixels.isNotEmpty()) {
-                // 初回の輝点フレームを保持する
-                if (cumulativeImageProxy == null) {
+                if (cumulativeFrame == null) {
+                    // 初回の輝点フレームを保持する
                     Log.d("MyImageAnalyzer", "最初の輝点を検出。このフレームを累積ベースとして保持します。")
-                    cumulativeImageProxy = imageProxy
-
-                    // このフレームは観測終了まで使うので、まだ閉じない
-                    shouldCloseImage = false
+                    cumulativeFrame = copyImageProxyToYuvFrame(imageProxy)
 
                 } else {
-                    // 2回目以降は、保持しているフレームのYバッファに輝度を上書きする
-                    updateCumulativeImage(result.brightPixels, imageProxy)
+                    // 2回目以降は、保持しているフレームのYUVバッファに輝度と色情報を上書きする
+                    updateCumulativeFrame(result.brightPixels, imageProxy)
                 }
             }
 
@@ -120,9 +128,7 @@ class MyImageAnalyzer(private val context: Context, private val listener: (Analy
             toListener(result)
 
         } finally {
-            if (shouldCloseImage) {
-                imageProxy.close()
-            }
+            imageProxy.close()
         }
     }
 
@@ -193,42 +199,90 @@ class MyImageAnalyzer(private val context: Context, private val listener: (Analy
         return
     }
 
-    //保持している累積用ImageProxyのYUVバッファに、新しい輝点を上書きする
-    private fun updateCumulativeImage(brightPixels: List<BrightPixel>, newImage: ImageProxy) {
-        val cumulativeYBuffer = cumulativeImageProxy?.planes?.get(0)?.buffer ?: return
-        val cumulativeUBuffer = cumulativeImageProxy?.planes?.get(1)?.buffer ?: return
-        val cumulativeVBuffer = cumulativeImageProxy?.planes?.get(2)?.buffer ?: return
+    //ImageProxyの内容を新しいYuvFrameオブジェクトにコピーする
+    private fun copyImageProxyToYuvFrame(imageProxy: ImageProxy): YuvFrame {
+        Log.d("MyImageAnalyzer", "最初の輝点を検出。フレームデータをコピーして保持します。")
+        val yPlane = imageProxy.planes[0]
+        val uPlane = imageProxy.planes[1]
+        val vPlane = imageProxy.planes[2]
 
-        val yRowStride = cumulativeImageProxy?.planes?.get(0)?.rowStride ?: return
-        val uRowStride = cumulativeImageProxy?.planes?.get(1)?.rowStride ?: return
-        val uPixelStride = cumulativeImageProxy?.planes?.get(1)?.pixelStride ?: return
+        return YuvFrame(
+            yBuffer = ByteBuffer.allocateDirect(yPlane.buffer.capacity()).apply { put(yPlane.buffer.asReadOnlyBuffer()) },
+            uBuffer = ByteBuffer.allocateDirect(uPlane.buffer.capacity()).apply { put(uPlane.buffer.asReadOnlyBuffer()) },
+            vBuffer = ByteBuffer.allocateDirect(vPlane.buffer.capacity()).apply { put(vPlane.buffer.asReadOnlyBuffer()) },
+            width = imageProxy.width,
+            height = imageProxy.height,
+            yRowStride = yPlane.rowStride,
+            uRowStride = uPlane.rowStride,
+            vRowStride = vPlane.rowStride,
+            uPixelStride = uPlane.pixelStride,
+            vPixelStride = vPlane.pixelStride
+        )
+    }
 
+    //保持しているcumulativeFrameのYUVバッファに、新しい輝点情報を上書きする
+    private fun updateCumulativeFrame(brightPixels: List<BrightPixel>, newImage: ImageProxy) {
+        val frame = cumulativeFrame ?: return
         val newUBuffer = newImage.planes[1].buffer
         val newVBuffer = newImage.planes[2].buffer
 
         brightPixels.forEach { pixel ->
-            val yIndex = pixel.y * yRowStride + pixel.x
-            val originalLuminosity = cumulativeYBuffer.get(yIndex).toInt() and 0xFF
+            val yIndex = pixel.y * frame.yRowStride + pixel.x
+            val originalLuminosity = frame.yBuffer.get(yIndex).toInt() and 0xFF
 
             if (pixel.luminosity > originalLuminosity) {
                 // Yプレーンの上書き
-                cumulativeYBuffer.put(yIndex, pixel.luminosity.toByte())
+                frame.yBuffer.put(yIndex, pixel.luminosity.toByte())
 
-                // U, Vプレーンの上書き（新しいフレームの色差情報をコピー）
-                val uvIndex = (pixel.y / 2) * uRowStride + (pixel.x / 2) * uPixelStride
+                // U, Vプレーンの上書き
+                val uvIndex = (pixel.y / 2) * frame.uRowStride + (pixel.x / 2) * frame.uPixelStride
 
-                // バッファの範囲チェックを追加
-                if (uvIndex < cumulativeUBuffer.capacity() && uvIndex < newUBuffer.capacity()) {
-                    cumulativeUBuffer.put(uvIndex, newUBuffer.get(uvIndex))
+                val oldUPos = newUBuffer.position()
+                val oldVPos = newVBuffer.position()
+
+                if (uvIndex < frame.uBuffer.capacity() && uvIndex < newUBuffer.capacity()) {
+                    frame.uBuffer.put(uvIndex, newUBuffer.get(uvIndex))
                 }
-                if (uvIndex < cumulativeVBuffer.capacity() && uvIndex < newVBuffer.capacity()) {
-                    cumulativeVBuffer.put(uvIndex, newVBuffer.get(uvIndex))
+                if (uvIndex < frame.vBuffer.capacity() && uvIndex < newVBuffer.capacity()) {
+                    frame.vBuffer.put(uvIndex, newVBuffer.get(uvIndex))
                 }
+
+                newUBuffer.position(oldUPos)
+                newVBuffer.position(oldVPos)
             }
         }
-        // rewindは通常不要だが、念のため
-        newUBuffer.rewind()
-        newVBuffer.rewind()
+    }
+
+    //YuvFrameオブジェクトからJPEG画像を生成して保存する
+    private fun saveYuvFrameAsJpeg(frame: YuvFrame) {
+        // バッファのポジションを先頭に戻す
+        frame.yBuffer.rewind()
+        frame.uBuffer.rewind()
+        frame.vBuffer.rewind()
+
+        // YuvImageに変換するために、Y,U,Vを一つのByteArrayにまとめる
+        val ySize = frame.yBuffer.remaining()
+        val uSize = frame.uBuffer.remaining()
+        val vSize = frame.vBuffer.remaining()
+        val nv21 = ByteArray(ySize + uSize + vSize)
+        frame.yBuffer.get(nv21, 0, ySize)
+        frame.vBuffer.get(nv21, ySize, vSize)
+        frame.uBuffer.get(nv21, ySize + vSize, uSize)
+
+        // YuvImageオブジェクトを生成
+        val yuvImage = YuvImage(nv21, ImageFormat.NV21, frame.width, frame.height, null)
+
+        // ★★★ YuvImageをBitmapに変換する処理 ★★★
+        val out = ByteArrayOutputStream()
+        // まずYuvImageをJPEG形式でメモリ上のバイト配列に圧縮する
+        yuvImage.compressToJpeg(Rect(0, 0, frame.width, frame.height), 100, out)
+
+        // そのバイト配列をデコードしてBitmapオブジェクトを生成する
+        val imageBytes = out.toByteArray()
+        val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+
+        // ファイル保存処理
+        saveImage(bitmap, "Cumulative_") // ★ 生成したBitmapを渡す
     }
 
     //listenerへ通知
@@ -272,7 +326,7 @@ class MyImageAnalyzer(private val context: Context, private val listener: (Analy
         // 「クールダウンが終わった」または「クールダウン中だが前回より明るい」場合
         if (isCooldownOver || isBrighterThanLast) {
             //画像を保存する
-            result.fileName = saveImage(imageProxy, "Radiographia_")
+            result.fileName = saveImage(imageProxy.toBitmap(), "Radiographia_")
             result.savedImage = true
 
             //保存した時間を記憶
@@ -283,10 +337,7 @@ class MyImageAnalyzer(private val context: Context, private val listener: (Analy
     }
 
     //Bitmap画像をストレージに保存する
-    private fun saveImage(imageProxy: ImageProxy, prefix: String): String {
-        // ImageProxyからBitmapに変換する
-        val bitmap = imageProxy.toBitmap()
-
+    private fun saveImage(bitmap: Bitmap, prefix: String): String {
         // ファイル名に現在の日時を入れる
         val fileName = "${prefix}${System.currentTimeMillis()}.jpg"
 
